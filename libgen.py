@@ -165,4 +165,3 @@ if __name__ == "__main__":
 	print ('\nBooks not found: \n')
 	for book in not_found:
 		print (book)
-	subprocess.Popen(['open', 'books'], bufsize=0)
