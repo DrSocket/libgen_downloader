@@ -10,11 +10,13 @@ install:
 ## download list
 If you want to download from list of books add `list.txt` to the libgen folder with the list of book names, one book per line. 
 
-eg.
-A brief history of black holes
-Existential physics
+eg. list.txt\
+\
+A brief history of black holes\
+Existential physics\
 ...
-
+\
+\
 then run from terminal
 
 	`libgen`
