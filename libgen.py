@@ -2,9 +2,11 @@ from lib.libgen_search import LibgenSearch
 import subprocess
 import os
 import sys
+import time
 
 not_found = []
 skipped = []
+manual = False
 
 def search_author(s, res, line):
 	author = input("Enter the author name: ")
@@ -109,7 +111,7 @@ def format_res(s: LibgenSearch, res: list, line: str, more: int = 5):
 				if choice == 'b':
 					return 'b'
 				if choice == 'exit':
-					sys.exit()
+					return -1
 				if choice == 'more':
 					more = int(input("Enter the number of results you want to see: "))
 					if more > 25 and len(res) > 25:
@@ -119,6 +121,13 @@ def format_res(s: LibgenSearch, res: list, line: str, more: int = 5):
 				if not success:
 					print("Invalid choice")
 					continue
+				if manual:
+					time.sleep(1)
+					new_book = input("Enter the name of the next book, `exit` to leave: ")
+					if new_book == 'exit':
+						return -1
+					res = s.search_title(new_book)
+					format_res(s, res, new_book)
 				break
 			except ValueError:
 				print("Invalid choice")
@@ -141,6 +150,7 @@ def make_list():
 if __name__ == "__main__":
 	s = LibgenSearch()
 	if len(sys.argv) > 1:
+		manual = True
 		print (f"Searching for {sys.argv[1]}")
 		res = s.search_title(sys.argv[1])
 		format_res(s, res, sys.argv[1])
@@ -155,3 +165,4 @@ if __name__ == "__main__":
 	print ('\nBooks not found: \n')
 	for book in not_found:
 		print (book)
+	subprocess.Popen(['open', 'books'], bufsize=0)
