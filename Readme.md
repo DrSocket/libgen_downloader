@@ -28,6 +28,8 @@ If you want to download book titles manually run from terminal
 
 A menu will guide you through the process.
 
+![Alt text](images/main%20menu.png)
+
 ## location
 Once finished downloading your books will be stored in the ~/Documents/libgen/books folder. you can open it directly from the terminal with an alias.
 

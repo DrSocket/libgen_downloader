@@ -42,9 +42,9 @@ def prompt():
 Enter the index of the book you want to download, 
 multiple books can be separated by comma:
 
-`x` : to skip,					`a`: add author to search,
-`s`: sort by most recent,			`b` : unsort
-`more` : show more book results,		`f` : search by extension
+`x` : to skip					`a`: add author to search
+`s`: sort by most recent			`b` : unsort
+`more` : show more book results			`f` : search by extension
 `exit` : to exit
 
 -> """).strip()
