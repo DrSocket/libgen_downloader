@@ -1,3 +1,4 @@
+from xml.etree.ElementInclude import include
 from lib.libgen_search import LibgenSearch
 import subprocess
 import os
@@ -18,12 +19,9 @@ def search_author(s, res, line):
 		elif auth[0].lower() in r['Author'].lower():
 			links.append(r)
 	if len(links) == 0:
-		print ("Author not found in results")
-		print ("Searching for author...")
 		line = line + " " + author
 		res = s.search_auto(line)
-		if res:
-			return res
+		return res
 	else:
 		return links
 
@@ -45,7 +43,7 @@ multiple books can be separated by comma:
 `x` : to skip					`a`: add author to search
 `s`: sort by most recent			`b` : unsort
 `more` : show more book results			`f` : search by extension
-`exit` : to exit
+`manual` : enter a book manually		`exit` : to exit
 
 -> """).strip()
 	return ret
@@ -57,8 +55,9 @@ def download_books(choice, res):
 		if res[choice]:
 			links = s.resolve_download_links(res[choice])
 			url = links['GET']
-			output_path = f"books/{res[choice]['Title']}.{res[choice]['Extension']}"
-			subprocess.Popen(['wget', '-b', '-q', url, '-P', output_path], bufsize=0)
+			# output_path = f"books/{res[choice]['Title']}.{res[choice]['Extension']}"
+			subprocess.Popen(f"wget -b -q {url} -P ./books/",shell=True, stdout=subprocess.DEVNULL)
+			# subprocess.Popen(['wget', '-b', '-q', url, '-P', output_path])
 			success = True
 	else:
 		choice = choice.split(', ')
@@ -68,8 +67,9 @@ def download_books(choice, res):
 				if res[c]:
 					links = s.resolve_download_links(res[c])
 					url = links['GET']
-					output_path = f"books/{res[c]['Title']}.{res[c]['Extension']}"
-					subprocess.Popen(['wget', '-b', '-q', url, '-P', output_path], bufsize=0)
+					# output_path = f"books/{res[c]['Title']}.{res[c]['Extension']}"
+					subprocess.Popen(f"wget -b -q {url} -P ./books/",shell=True)
+					# subprocess.Popen(['wget', '-b', '-q', url, '-P', output_path], bufsize=0)
 					success = True
 	if success:
 		print("Download started")
@@ -117,18 +117,8 @@ def format_res(s: LibgenSearch, res: list, line: str, more: int = 5):
 					if more > 25 and len(res) > 25:
 						res = s.search_auto(line)
 					format_res(s, res, line, more)
-				success = download_books(choice, res)
-				if not success:
-					print("Invalid choice")
-					continue
-				if manual:
-					time.sleep(1)
-					new_book = input("Enter the name of the next book, `exit` to leave: ")
-					if new_book == 'exit':
-						return -1
-					res = s.search_title(new_book)
-					format_res(s, res, new_book)
-				break
+				download_books(choice, res)
+				return
 			except ValueError:
 				print("Invalid choice")
 				continue
@@ -153,12 +143,14 @@ if __name__ == "__main__":
 		manual = True
 		print (f"Searching for {sys.argv[1]}")
 		res = s.search_title(sys.argv[1])
-		format_res(s, res, sys.argv[1])
+		status = format_res(s, res, sys.argv[1], True)
 	else:
 		books = make_list()
-		for book in books:
+		for i, book in enumerate(books):
 			res = s.search_title(book)
-			format_res(s, res, book)
+			status = format_res(s, res, book, i == len(books) - 1)
+			if status == -1:
+				break
 	print ('\nSkipped books: \n')
 	for book in skipped:
 		print (book)
